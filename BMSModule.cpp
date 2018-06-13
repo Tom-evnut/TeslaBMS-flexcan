@@ -95,7 +95,9 @@ bool BMSModule::readModuleValues()
   payload[1] = REG_BAL_CTRL;
   payload[2] = 0; //write balance state to register
   BMSUtil::sendData(payload, 3, true);
-
+  payload[0] = moduleAddress << 1;
+  delay(2);
+  
   payload[0] = moduleAddress << 1;
 
   readStatus();

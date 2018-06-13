@@ -227,7 +227,7 @@ void loop()
   {
     if (bms.getHighCellVolt() > settings.balanceVoltage && bms.getHighCellVolt() > bms.getLowCellVolt() + settings.balanceHyst)
     {
-      bms.balanceCells();
+      
       balancecells = 1;
     }
     else
@@ -267,7 +267,7 @@ void loop()
         Discharge = 0;
         if (bms.getHighCellVolt() > settings.balanceVoltage && bms.getHighCellVolt() > bms.getLowCellVolt() + settings.balanceHyst)
         {
-          bms.balanceCells();
+          
           balancecells = 1;
         }
         else
@@ -310,7 +310,7 @@ void loop()
         digitalWrite(OUT3, HIGH);//enable charger
         if (bms.getHighCellVolt() > settings.balanceVoltage)
         {
-          bms.balanceCells();
+          
           balancecells = 1;
         }
         else
@@ -370,6 +370,10 @@ void loop()
     updateSOC();
     currentlimit();
     VEcan();
+    if (balancecells == 1)
+    {
+      bms.balanceCells();
+    }
   }
 }
 
