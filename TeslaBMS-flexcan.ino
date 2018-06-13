@@ -17,6 +17,8 @@ EEPROMSettings settings;
 //Simple BMS Settings//
 int CAP = 100; //battery size in Ah
 int Pstrings = 1; // strings in parallel used to divide voltage of pack
+int ESSmode = 0; //turn on ESS mode, does not respond to key switching
+
 
 //Simple BMS wiring//
 const int ACUR1 = A0; // current 1
