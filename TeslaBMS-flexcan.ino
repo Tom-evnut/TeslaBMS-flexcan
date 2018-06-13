@@ -116,10 +116,11 @@ uint16_t socvolt[4] = {3100, 10, 4100, 90};
 //variables
 int incomingByte = 0;
 int x = 0;
-int debug = 0;
-int candebug = 1; //view can frames
+int debug = 1;
+int candebug = 0; //view can frames
 int debugCur = 0;
 int menuload = 0;
+int balancingcells =0;
 
 
 ADC *adc = new ADC(); // adc object
@@ -231,9 +232,14 @@ void loop()
 
     case (Ready):
       Discharge = 0;
-      if (bms.getHighCellVolt() > settings.balanceVoltage);
+      if (bms.getHighCellVolt() > settings.balanceVoltage && bms.getHighCellVolt() > bms.getLowCellVolt() + settings.balanceHyst)
       {
         bms.balanceCells();
+        balancingcells = 1;
+      }
+      else
+      {
+        balancingcells = 0;
       }
       if (digitalRead(IN2) == HIGH && (settings.balanceVoltage + settings.balanceHyst) > bms.getHighCellVolt()) //detect AC present for charging and check not balancing
       {
@@ -269,11 +275,16 @@ void loop()
     case (Charge):
       Discharge = 0;
       digitalWrite(OUT3, HIGH);//enable charger
-      if (bms.getHighCellVolt() > settings.balanceVoltage);
+      if (bms.getHighCellVolt() > settings.balanceVoltage&& bms.getHighCellVolt() > bms.getLowCellVolt() + settings.balanceHyst)
       {
         bms.balanceCells();
+        balancingcells = 1;
       }
-      if (bms.getHighCellVolt() > settings.OverVSetpoint);
+      else 
+      {
+        balancingcells = 0;
+      }
+      if (bms.getHighCellVolt() > settings.OverVSetpoint)
       {
         digitalWrite(OUT3, LOW);//turn off charger
         bmsstatus = Ready;
@@ -292,7 +303,7 @@ void loop()
       {
         bmsstatus = Charge;
       }
-      if (bms.getLowCellVolt() >= settings.UnderVSetpoint);
+      if (bms.getLowCellVolt() >= settings.UnderVSetpoint)
       {
         bmsstatus = Ready;
       }
@@ -331,7 +342,7 @@ void loop()
 void alarmupdate()
 {
   alarm[0] = 0;
-  if (bms.getHighCellVolt() > settings.OverVSetpoint);
+  if (bms.getHighCellVolt() > settings.OverVSetpoint)
   {
     alarm[0] = 0x04;
   }
@@ -403,6 +414,10 @@ void printbmsstat()
   if (digitalRead(IN1) == HIGH)
   {
     SERIALCONSOLE.print("| Key ON |");
+  }
+    if (balancingcells == 1)
+  {
+    SERIALCONSOLE.print("|Balancing Active");
   }
 }
 
