@@ -408,9 +408,6 @@ void BMSModuleManager::printPackSummary()
     Logger::console("");
     Logger::console("");
     Logger::console("");
-    Logger::console("                                     Pack Status:");
-    if (isFaulted) Logger::console("                                       FAULTED!");
-    else Logger::console("                                   All systems go!");
     Logger::console("Modules: %i    Voltage: %fV   Avg Cell Voltage: %fV     Avg Temp: %fC ", numFoundModules, 
                     getPackVoltage(),getAvgCellVolt(), getAvgTemperature());
     Logger::console("");
@@ -525,9 +522,6 @@ void BMSModuleManager::printPackDetails()
     Logger::console("");
     Logger::console("");
     Logger::console("");
-    Logger::console("                                         Pack Status:");
-    if (isFaulted) Logger::console("                                           FAULTED!");
-    else Logger::console("                                      All systems go!");
     Logger::console("Modules: %i    Voltage: %fV   Avg Cell Voltage: %fV  Low Cell Voltage: %fV   High Cell Voltage: %fV   Avg Temp: %fC ", numFoundModules, 
                     getPackVoltage(),getAvgCellVolt(),LowCellVolt, HighCellVolt, getAvgTemperature());
     Logger::console("");
