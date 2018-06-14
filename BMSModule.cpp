@@ -198,7 +198,7 @@ float BMSModule::getAverageV()
 {
   int x = 0;
   float avgVal = 0.0f;
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < 6; i++)
   {
     if (cellVolt[i] > IgnoreCell && cellVolt[i] < 60.0)
     {
