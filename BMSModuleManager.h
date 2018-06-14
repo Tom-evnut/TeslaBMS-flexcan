@@ -6,6 +6,7 @@ class BMSModuleManager
 {
 public:
     BMSModuleManager();
+    int seriescells();
     void balanceCells();
     void setupBoards();
     void findBoards();
@@ -50,6 +51,7 @@ private:
     int batteryID;
     int numFoundModules;                    // The number of modules that seem to exist
     bool isFaulted;
+    int spack;
     /*
     void sendBatterySummary();
     void sendModuleSummary(int module);

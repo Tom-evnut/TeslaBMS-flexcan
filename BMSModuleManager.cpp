@@ -18,6 +18,19 @@ BMSModuleManager::BMSModuleManager()
   isFaulted = false;
 }
 
+int BMSModuleManager::seriescells()
+{
+  spack = 0;
+  for (int y = 1; y < 63; y++)
+  {
+    if (modules[y].isExisting())
+    {
+      spack = spack + modules[y].getscells();
+    }
+  }
+  return spack;
+}
+
 void BMSModuleManager::balanceCells()
 {
   uint8_t payload[4];
