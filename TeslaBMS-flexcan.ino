@@ -16,7 +16,7 @@ EEPROMSettings settings;
 
 //Simple BMS Settings//
 int CAP = 100; //battery size in Ah
-int Pstrings = 1; // strings in parallel used to divide voltage of pack
+int Pstrings = 2; // strings in parallel used to divide voltage of pack
 int ESSmode = 1; //turn on ESS mode, does not respond to key switching
 
 
@@ -136,6 +136,8 @@ void loadSettings()
   settings.batteryID = 0x01; //in the future should be 0xFF to force it to ask for an address
   settings.OverVSetpoint = 4.1f;
   settings.UnderVSetpoint = 3.0f;
+    settings.ChargeVsetpoint = 4.1f;
+  settings.DischVsetpoint = 3.2f;
   settings.OverTSetpoint = 65.0f;
   settings.UnderTSetpoint = -10.0f;
   settings.ChargeTSetpoint = 0.0f;
@@ -793,14 +795,14 @@ void VEcan() //communication with Victron system over CAN
 {
   msg.id  = 0x351;
   msg.len = 8;
-  msg.buf[0] = lowByte(uint16_t(settings.OverVSetpoint * bms.seriescells() / Pstrings) * 10);
-  msg.buf[1] = highByte(uint16_t(settings.OverVSetpoint * bms.seriescells() / Pstrings) * 10);
+  msg.buf[0] = lowByte(uint16_t(settings.ChargeVsetpoint * bms.seriescells()/Pstrings) * 10);
+  msg.buf[1] = highByte(uint16_t(settings.ChargeVsetpoint * bms.seriescells()/Pstrings) * 10);
   msg.buf[2] = lowByte(chargecurrent);
   msg.buf[3] = highByte(chargecurrent);
   msg.buf[4] = lowByte(discurrent );
   msg.buf[5] = highByte(discurrent);
-  msg.buf[6] = lowByte(uint16_t(settings.UnderVSetpoint * bms.seriescells() / Pstrings) * 10);
-  msg.buf[7] = highByte(uint16_t(settings.UnderVSetpoint * bms.seriescells() / Pstrings) * 10);
+  msg.buf[6] = lowByte(uint16_t(settings.DischVsetpoint * bms.seriescells()/Pstrings) * 10);
+  msg.buf[7] = highByte(uint16_t(settings.DischVsetpoint* bms.seriescells()/Pstrings) * 10);
   Can0.write(msg);
 
   msg.id  = 0x355;

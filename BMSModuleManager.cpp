@@ -538,8 +538,8 @@ void BMSModuleManager::printPackDetails()
   Logger::console("");
   Logger::console("");
   Logger::console("");
-  Logger::console("Modules: %i Cells: %i  Voltage: %fV   Avg Cell Voltage: %fV  Low Cell Voltage: %fV   High Cell Voltage: %fV   Avg Temp: %fC ", numFoundModules, seriescells(),
-                  getPackVoltage(), getAvgCellVolt(), LowCellVolt, HighCellVolt, getAvgTemperature());
+  Logger::console("Modules: %i Cells: %i Strings: %i  Voltage: %fV   Avg Cell Voltage: %fV  Low Cell Voltage: %fV   High Cell Voltage: %fV   Avg Temp: %fC ", numFoundModules, seriescells(),
+                  Pstring, getPackVoltage(), getAvgCellVolt(), LowCellVolt, HighCellVolt, getAvgTemperature());
   Logger::console("");
   for (int y = 1; y < 63; y++)
   {
