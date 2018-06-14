@@ -18,6 +18,7 @@ EEPROMSettings settings;
 int CAP = 100; //battery size in Ah
 int Pstrings = 1; // strings in parallel used to divide voltage of pack
 int ESSmode = 1; //turn on ESS mode, does not respond to key switching
+float storagedelta = 0.3; //in ESS mode in 1 high changes charge and discharge limits by this amount
 
 
 //Simple BMS wiring//
@@ -117,6 +118,7 @@ uint16_t socvolt[4] = {3100, 10, 4100, 90};
 
 //variables
 int incomingByte = 0;
+int storagemode = 0;
 int x = 0;
 int debug = 1;
 int candebug = 0; //view can frames
@@ -227,6 +229,24 @@ void loop()
 
   if (ESSmode == 1)
   {
+    if (digitalRead(IN1) == LOW)//Key OFF
+    {
+      if (storagemode == 1)
+      {
+        settings.ChargeVsetpoint += storagedelta;
+        settings.DischVsetpoint -= storagedelta;
+        storagemode = 0;
+      }
+    }
+    else
+    {
+      if (storagemode == 0)
+      {
+        settings.ChargeVsetpoint -= storagedelta;
+        settings.DischVsetpoint += storagedelta;
+        storagemode = 1;
+      }
+    }
     if (bms.getHighCellVolt() > settings.balanceVoltage && bms.getHighCellVolt() > bms.getLowCellVolt() + settings.balanceHyst)
     {
 
@@ -1080,14 +1100,14 @@ void menu()
       case 'a': //a Charge Voltage Setpoint
         if (Serial.available() > 0)
         {
-          settings.ChargeVsetpoint= Serial.parseInt();
+          settings.ChargeVsetpoint = Serial.parseInt();
           settings.ChargeVsetpoint = settings.ChargeVsetpoint / 1000;
           SERIALCONSOLE.print(settings.ChargeVsetpoint  * 1000, 0);
           SERIALCONSOLE.print("mV Charge Voltage Limit Setpoint");
         }
         break;
 
-              case 'b': //Discharge Voltage Setpoint
+      case 'b': //Discharge Voltage Setpoint
         if (Serial.available() > 0)
         {
           settings.DischVsetpoint = Serial.parseInt();
