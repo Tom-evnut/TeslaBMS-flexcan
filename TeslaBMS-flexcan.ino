@@ -16,7 +16,7 @@ EEPROMSettings settings;
 
 //Simple BMS Settings//
 int CAP = 100; //battery size in Ah
-int Pstrings = 2; // strings in parallel used to divide voltage of pack
+int Pstrings = 1; // strings in parallel used to divide voltage of pack
 int ESSmode = 1; //turn on ESS mode, does not respond to key switching
 
 
@@ -136,7 +136,7 @@ void loadSettings()
   settings.batteryID = 0x01; //in the future should be 0xFF to force it to ask for an address
   settings.OverVSetpoint = 4.1f;
   settings.UnderVSetpoint = 3.0f;
-    settings.ChargeVsetpoint = 4.1f;
+  settings.ChargeVsetpoint = 4.1f;
   settings.DischVsetpoint = 3.2f;
   settings.OverTSetpoint = 65.0f;
   settings.UnderTSetpoint = -10.0f;
@@ -229,7 +229,7 @@ void loop()
   {
     if (bms.getHighCellVolt() > settings.balanceVoltage && bms.getHighCellVolt() > bms.getLowCellVolt() + settings.balanceHyst)
     {
-      
+
       balancecells = 1;
     }
     else
@@ -269,7 +269,7 @@ void loop()
         Discharge = 0;
         if (bms.getHighCellVolt() > settings.balanceVoltage && bms.getHighCellVolt() > bms.getLowCellVolt() + settings.balanceHyst)
         {
-          
+
           balancecells = 1;
         }
         else
@@ -312,7 +312,7 @@ void loop()
         digitalWrite(OUT3, HIGH);//enable charger
         if (bms.getHighCellVolt() > settings.balanceVoltage)
         {
-          
+
           balancecells = 1;
         }
         else
@@ -795,14 +795,14 @@ void VEcan() //communication with Victron system over CAN
 {
   msg.id  = 0x351;
   msg.len = 8;
-  msg.buf[0] = lowByte(uint16_t(settings.ChargeVsetpoint * bms.seriescells()/Pstrings) * 10);
-  msg.buf[1] = highByte(uint16_t(settings.ChargeVsetpoint * bms.seriescells()/Pstrings) * 10);
+  msg.buf[0] = lowByte(uint16_t(settings.ChargeVsetpoint * bms.seriescells() / Pstrings) * 10);
+  msg.buf[1] = highByte(uint16_t(settings.ChargeVsetpoint * bms.seriescells() / Pstrings) * 10);
   msg.buf[2] = lowByte(chargecurrent);
   msg.buf[3] = highByte(chargecurrent);
   msg.buf[4] = lowByte(discurrent );
   msg.buf[5] = highByte(discurrent);
-  msg.buf[6] = lowByte(uint16_t(settings.DischVsetpoint * bms.seriescells()/Pstrings) * 10);
-  msg.buf[7] = highByte(uint16_t(settings.DischVsetpoint* bms.seriescells()/Pstrings) * 10);
+  msg.buf[6] = lowByte(uint16_t(settings.DischVsetpoint * bms.seriescells() / Pstrings) * 10);
+  msg.buf[7] = highByte(uint16_t(settings.DischVsetpoint * bms.seriescells() / Pstrings) * 10);
   Can0.write(msg);
 
   msg.id  = 0x355;
@@ -1054,6 +1054,12 @@ void menu()
         SERIALCONSOLE.print(discurrentmax * 0.001);
         SERIALCONSOLE.print("A max Discharge - 9 ");
         SERIALCONSOLE.println("  ");
+        SERIALCONSOLE.print(settings.ChargeVsetpoint * 1000, 0);
+        SERIALCONSOLE.print("mV Charge Voltage Limit Setpoint - a ");
+        SERIALCONSOLE.println("  ");
+        SERIALCONSOLE.print(settings.DischVsetpoint * 1000, 0);
+        SERIALCONSOLE.print("mV Discharge Voltage Limit Setpoint - b");
+        SERIALCONSOLE.println("  ");
         break;
       case 101: //e dispaly settings
         SERIALCONSOLE.println("  ");
@@ -1068,6 +1074,26 @@ void menu()
           settings.OverVSetpoint = settings.OverVSetpoint / 1000;
           SERIALCONSOLE.print(settings.OverVSetpoint * 1000, 0);
           SERIALCONSOLE.print("mV Over Voltage Setpoint");
+        }
+        break;
+
+      case 'a': //a Charge Voltage Setpoint
+        if (Serial.available() > 0)
+        {
+          settings.ChargeVsetpoint= Serial.parseInt();
+          settings.ChargeVsetpoint = settings.ChargeVsetpoint / 1000;
+          SERIALCONSOLE.print(settings.ChargeVsetpoint  * 1000, 0);
+          SERIALCONSOLE.print("mV Charge Voltage Limit Setpoint");
+        }
+        break;
+
+              case 'b': //Discharge Voltage Setpoint
+        if (Serial.available() > 0)
+        {
+          settings.DischVsetpoint = Serial.parseInt();
+          settings.DischVsetpoint = settings.DischVsetpoint / 1000;
+          SERIALCONSOLE.print(settings.DischVsetpoint * 1000, 0);
+          SERIALCONSOLE.print("mV Discharge Voltage Limit Setpoint");
         }
         break;
 
